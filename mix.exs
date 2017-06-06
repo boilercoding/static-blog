@@ -15,7 +15,7 @@ defmodule StaticBlog.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger, :cowboy],
+    [extra_applications: [:logger, :cowboy, :markdown],
      mod: {StaticBlog.Application, []}]
   end
 
@@ -29,6 +29,7 @@ defmodule StaticBlog.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:cowboy, "~> 1.1"}]
+    [{:cowboy, "~> 1.1"},
+     {:markdown, github: "devinus/markdown"}]
   end
 end

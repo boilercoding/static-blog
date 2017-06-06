@@ -1,18 +1,29 @@
 defmodule StaticBlog do
-  @moduledoc """
-  Documentation for StaticBlog.
-  """
+  use Application
 
-  @doc """
-  Hello world.
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
 
-  ## Examples
+    children = [
+      worker(__MODULE__, [], function: :run)
+    ]
 
-      iex> StaticBlog.hello
-      :world
+    opts = [strategy: :one_for_one, name: StaticBlog.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
 
-  """
-  def hello do
-    :world
+  def run do
+    routes = [
+      {"/", StaticBlog.Handler, []},
+      {"/:filename", StaticBlog.Handler, []},
+      {"/static/[...]", :cowboy_static, {:priv_dir, :static_blog, "static_files"}}
+    ]
+
+    dispatch = :cowboy_router.compile([{:_, routes}])
+
+    opts = [port: 4000]
+    env = [dispatch: dispatch]
+
+    {:ok, _pid} = :cowboy.start_http(:http, 100, opts, [env: env])
   end
 end
